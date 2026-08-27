@@ -112,5 +112,248 @@ Continue after an approval decision.
 
 Demonstrates: LangGraph conditional workflows, persistent state and human-in-the-loop design.
 
-Architecture
+Architecture:
+
+<img width="2816" height="1536" alt="Gemini_Generated_Image_c73yr5c73yr5c73y" src="https://github.com/user-attachments/assets/ca7085d9-a0c0-4cbb-b101-903b6d370710" />
+
+Agent Tools
+
+The initial version of the agent is designed around a small set of business tools.
+
+get_order(order_id)
+
+get_payment(order_id)
+
+get_shipment(order_id)
+
+search_policy(query)
+
+create_refund_request(order_id)
+
+create_support_ticket(order_id, reason)
+
+escalate_to_human(order_id, reason)
+
+The LLM determines which tools are required based on the customer request and the current workflow state.
+
+RAG Knowledge Base
+
+RAG is used for information that belongs to organizational knowledge rather than transactional systems.
+
+Example documents include:
+
+Refund Policy
+Return Policy
+Shipping Policy
+Cancellation Policy
+Payment Policy
+Customer Support Procedures
+
+The retrieval pipeline follows:
+
+Policy Documents
+      ↓
+Document Processing
+      ↓
+Chunking
+      ↓
+Embeddings
+      ↓
+PostgreSQL / pgvector
+      ↓
+Semantic Retrieval
+      ↓
+Relevant Policy Context
+      ↓
+LLM
+      ↓
+Grounded Decision / Response
+
+This keeps business rules separate from transactional information such as order and payment records.
+
+Technology Stack
+Technology	Purpose
+Python	Core backend and AI logic
+LangGraph	Agent orchestration and workflow state
+LLM APIs	Intent understanding, reasoning and tool selection
+RAG	Retrieval of internal policies and business knowledge
+Embeddings	Semantic representation of policy documents
+FastAPI	Backend and REST API layer
+Tool Calling	Interaction between the agent and business services
+PostgreSQL	Business and workflow data
+pgvector	Vector storage and semantic retrieval
+Docker	Containerized application environment
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Planned Project Structure
+agentic-ecommerce-order-resolution-platform/
+│
+├── app/
+│   ├── main.py
+│   │
+│   ├── agents/
+│   │   ├── graph.py
+│   │   ├── nodes.py
+│   │   └── state.py
+│   │
+│   ├── tools/
+│   │   ├── order_tools.py
+│   │   ├── payment_tools.py
+│   │   ├── shipping_tools.py
+│   │   └── support_tools.py
+│   │
+│   ├── rag/
+│   │   ├── ingestion.py
+│   │   ├── embeddings.py
+│   │   └── retriever.py
+│   │
+│   ├── api/
+│   │   └── routes.py
+│   │
+│   ├── database/
+│   │   ├── connection.py
+│   │   └── models.py
+│   │
+│   └── services/
+│
+├── data/
+│   └── policies/
+│
+├── tests/
+│
+├── Dockerfile
+├── docker-compose.yml
+├── requirements.txt
+├── .env.example
+└── README.md
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Development Roadmap
+Phase 1 — Agent Foundation
+
+Configure Python environment
+
+Connect an LLM API
+
+Define LangGraph workflow state
+
+Create initial graph
+
+Process a basic customer request
+
+Phase 2 — Tool Calling
+
+Implement order lookup tool
+
+Implement payment lookup tool
+
+Implement shipment lookup tool
+
+Enable agent-driven tool selection
+
+Phase 3 — REST API Integration
+
+Build mock e-commerce services with FastAPI
+
+Add order endpoint
+
+Add payment endpoint
+
+Add shipment endpoint
+
+Connect agent tools to REST services
+
+Phase 4 — RAG
+
+Add sample business policies
+
+Implement document ingestion
+
+Generate embeddings
+
+Configure PostgreSQL + pgvector
+
+Implement semantic policy retrieval
+
+Expose RAG retrieval as an agent tool
+
+Phase 5 — Workflow State & Escalation
+
+Persist workflow executions
+
+Add conditional routing
+
+Add support-ticket creation
+
+Add refund workflow
+
+Add human escalation path
+
+Phase 6 — Containerization & Testing
+
+Add Dockerfile
+
+Add Docker Compose
+
+Add workflow tests
+
+Add API tests
+
+Document sample requests and outputs
+
+Example End-to-End Workflow
+Customer Request
+My order ORD-1045 is five days late and I want a refund.
+Agent Workflow
+Understand Request
+        ↓
+Detected:
+Delayed Order + Refund Request
+        ↓
+get_order("ORD-1045")
+        ↓
+get_shipment("ORD-1045")
+        ↓
+get_payment("ORD-1045")
+        ↓
+search_policy("refund eligibility for delayed delivery")
+        ↓
+Evaluate Business Rules
+        ↓
+       Eligible?
+       /      \
+     YES       NO
+      │         │
+      ▼         ▼
+Refund Tool   Explain Policy
+      │
+      ▼
+Update Workflow State
+      │
+      ▼
+Final Customer Response
+Project Objective
+
+The objective of this project is not to create another general-purpose chatbot.
+
+It is to demonstrate how agentic AI can coordinate multiple enterprise services, retrieve organizational knowledge, maintain workflow context, and execute controlled multi-step business processes.
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+The project intentionally uses a limited set of e-commerce scenarios so that the focus remains on the underlying AI engineering architecture.
+
+Key Concepts Demonstrated
+Agentic AI workflows
+Multi-step LLM orchestration
+LangGraph state management
+LLM tool calling
+Conditional routing
+REST API integration
+Retrieval-Augmented Generation
+Embeddings and vector search
+PostgreSQL / pgvector
+Human-in-the-loop workflows
+Backend API development
+Docker-based deployment
+Disclaimer
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+This is an educational portfolio project using fictional e-commerce data and mock services.
+
+It is not affiliated with or connected to Amazon or any other e-commerce company.
 
